@@ -8,6 +8,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="My Diet">
 <title>My Diet</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://kqtfiirfamyanacnkbvu.supabase.co">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <style>
@@ -1153,5 +1156,6 @@ addMsg('a', '안녕하세요! 오늘 식단·운동 기록을 보고 먹을 것,
 resetMealForm(); renderHeader(); go('dash'); initAuth();
 })();
 </script>
+<script>if('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js');</script>
 </body>
 </html>
