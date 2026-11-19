@@ -767,10 +767,12 @@ async function analyzePhoto(f){
     $('#mName').value = items.map(i => i.name + (i.amount ? ` ${i.amount}` : '')).join(', ').slice(0,80); $('#mAmt').value = '';
     PHOTO = { name:$('#mName').value.trim(), v };
     $('#aiOut').innerHTML = items.map(i => `${esc(i.name)} (${esc(i.amount)}) ≈ ${+i.kcal || 0} kcal`).join('<br>')
-      + `<br><b>합계 약 ${v[0]} kcal</b> (탄 ${v[2]} · 단 ${v[1]} · 지 ${v[3]}g)` + (d.note ? `<br>${esc(d.note)}` : '')
+      + `<br><b>합계 약 ${v[0]} kcal</b> (탄 ${v[2]} · 단 ${v[1]} · 지 ${v[3]}g)` + (d.note ? `<br>${esc(d.note)}<div class="row">
+    <button class="btn sm ghost" data-act="photoRetry">다시 분석</button>
+    <button class="btn sm ghost" data-act="photoClear">사진 지우기</button></div>` : '')
       + (r.limit ? `<br>오늘 사진 분석 ${r.limit - r.used}회 남음` : '');
     $('#mHint').textContent = "끼니를 확인하고 '추가'를 누르면 사진 분석 값으로 저장돼요.";
-  }catch(e){
+ }catch(e){
   const msg = e instanceof SyntaxError ? '음식을 인식하지 못했어요' : e.message;
   $('#aiOut').innerHTML = `분석 실패: ${esc(msg)}<div class="row">
     <button class="btn sm ghost" data-act="photoRetry">다시 분석</button>
