@@ -516,6 +516,7 @@ const empty = '<p class="muted">기록이 없어요.</p>';
 const GROUP_OF = { work:'routine', goal:'body' }, LASTSUB = {};
 let CUR = 'dash';
 function go(id){
+  if(id !== 'meal' && CUR === 'meal') clearPhoto();
   CUR = id; const top = GROUP_OF[id] || id;
   $$('main > section').forEach(s => s.hidden = s.id !== id);
   $$('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === top));
@@ -746,7 +747,18 @@ function resize(file){
       URL.revokeObjectURL(url); ok(c.toDataURL('image/jpeg', .85).split(',')[1]); };
     img.onerror = no; img.src = url; });
 }
+  
+  let LASTPHOTO = null;
+function clearPhoto(){
+  const img = $('#mPrev');
+  if(img.src.startsWith('blob:')) URL.revokeObjectURL(img.src);
+  img.removeAttribute('src'); img.hidden = true;
+  $('#aiOut').textContent = ''; PHOTO = null; LASTPHOTO = null;
+  if(!editId) $('#mHint').textContent = MEAL_HINT;
+}
+  
 async function analyzePhoto(f){
+  LASTPHOTO = f;
   $('#aiOut').textContent = '사진 분석 중…';
   try{
     const r = await callAI({ kind:'photo', image:await resize(f) }), d = parseJSON(r.text), items = d.items || [];
@@ -758,7 +770,11 @@ async function analyzePhoto(f){
       + `<br><b>합계 약 ${v[0]} kcal</b> (탄 ${v[2]} · 단 ${v[1]} · 지 ${v[3]}g)` + (d.note ? `<br>${esc(d.note)}` : '')
       + (r.limit ? `<br>오늘 사진 분석 ${r.limit - r.used}회 남음` : '');
     $('#mHint').textContent = "끼니를 확인하고 '추가'를 누르면 사진 분석 값으로 저장돼요.";
-  }catch(e){ $('#aiOut').textContent = '분석 실패: ' + e.message; }
+  }catch(e){
+  const msg = e instanceof SyntaxError ? '음식을 인식하지 못했어요' : e.message;
+  $('#aiOut').innerHTML = `분석 실패: ${esc(msg)}<div class="row">
+    <button class="btn sm ghost" data-act="photoRetry">다시 분석</button>
+    <button class="btn sm ghost" data-act="photoClear">사진 지우기</button></div>`;
 }
 
 /* ===== 운동 기록 ===== */
@@ -1120,6 +1136,8 @@ const ACT = {
   bodyAdd:addBody, goalSave:saveGoal,
   saveNick, savePw, withdraw, logout, exportData, copyInvite, loadAdmin:() => loadAdmin(), kick:d => kick(d.id),
   authSwitch:() => setAuthMode(authMode === 'in' ? 'up' : 'in')
+  photoRetry:() => LASTPHOTO && analyzePhoto(LASTPHOTO),
+  photoClear:clearPhoto,
 };
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if(el && ACT[el.dataset.act]) ACT[el.dataset.act](el.dataset, el, e); });
 $('#chatForm').addEventListener('submit', e => { e.preventDefault(); askCoach($('#chatIn').value); });
