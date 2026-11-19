@@ -516,7 +516,7 @@ const empty = '<p class="muted">기록이 없어요.</p>';
 const GROUP_OF = { work:'routine', goal:'body' }, LASTSUB = {};
 let CUR = 'dash';
 function go(id){
-  if(id !== 'meal' && CUR === 'meal') clearPhoto();
+  /* if(id !== 'meal' && CUR === 'meal') clearPhoto(); */
   CUR = id; const top = GROUP_OF[id] || id;
   $$('main > section').forEach(s => s.hidden = s.id !== id);
   $$('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === top));
